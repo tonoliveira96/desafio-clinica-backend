@@ -15,7 +15,7 @@ export class createImages1602628900481 implements MigrationInterface {
             generationStrategy: "increment",
           },
           {
-            name: "patha",
+            name: "path",
             type: "varchar",
           },
           {
@@ -27,7 +27,7 @@ export class createImages1602628900481 implements MigrationInterface {
           {
             name: "ImageOrphanage",
             columnNames: ["orphanage_id"],
-            referencedTableName: "orphanage",
+            referencedTableName: "orphanages",
             referencedColumnNames: ["id"],
             onUpdate: "CASCADE",
             onDelete: "CASCADE",
