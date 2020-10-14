@@ -3,13 +3,17 @@ import { Request, response, Response } from "express";
 import { getRepository } from "typeorm";
 import Orphange from "../models/Orphanage";
 
+import orphangeView from '../views/Orphanage_views';
+
 export default {
   async index(request: Request, response: Response) {
     const orphanagesRepository = getRepository(Orphange);
 
-    const orphanages = await orphanagesRepository.find();
+    const orphanages = await orphanagesRepository.find({
+      relations:['images']
+    });
 
-    return response.json(orphanages);
+    return response.json(orphangeView.renderMany(orphanages));
   },
 
   async show(request: Request, response: Response) {
@@ -17,9 +21,11 @@ export default {
 
     const orphanagesRepository = getRepository(Orphange);
 
-    const orphanages = await orphanagesRepository.findOneOrFail(id);
+    const orphanages = await orphanagesRepository.findOneOrFail(id,{
+      relations:['images']
+    });
 
-    return response.json(orphanages);
+    return response.json(orphangeView.render(orphanages));
   },
 
   async create(request: Request, response: Response) {
@@ -40,7 +46,7 @@ export default {
     const images = requestImages.map((image) => {
       return { path: image.filename };
     });
-    
+
     const orphanages = orphanagesRepository.create({
       name,
       latitude,
