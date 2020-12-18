@@ -1,72 +1,73 @@
 import { Request, response, Response } from "express";
 
 import { getRepository } from "typeorm";
-import Orphange from "../models/Orphanage";
+import Clinic from "../models/Clinic";
 import * as Yup from 'yup';
 
-import orphangeView from '../views/Orphanage_views';
+import clinicView from '../views/Clinic_views';
 
 export default {
   async index(request: Request, response: Response) {
-    const orphanagesRepository = getRepository(Orphange);
+    const orphanagesRepository = getRepository(Clinic);
 
     const orphanages = await orphanagesRepository.find({
       relations:['images']
     });
 
-    return response.json(orphangeView.renderMany(orphanages));
+    return response.json(clinicView.renderMany(orphanages));
   },
 
   async show(request: Request, response: Response) {
     const { id } = request.params;
 
-    const orphanagesRepository = getRepository(Orphange);
+    const orphanagesRepository = getRepository(Clinic);
 
     const orphanages = await orphanagesRepository.findOneOrFail(id,{
       relations:['images']
     });
 
-    return response.json(orphangeView.render(orphanages));
+    return response.json(clinicView.render(orphanages));
   },
 
   async create(request: Request, response: Response) {
     const {
       name,
-      latitude,
-      longitude,
-      about,
-      instructions,
-      opening_hours,
-      open_on_weekends,
+      email,
+      phone,
+      cep,
+      adress,
+      services,
+      about
     } = request.body;
 
-    const orphanagesRepository = getRepository(Orphange);
+    const orphanagesRepository = getRepository(Clinic);
 
     const requestImages = request.files as Express.Multer.File[];
 
-    const images = requestImages.map((image) => {
-      return { path: image.filename };
-    });
+    // const images = requestImages.map((image) => {
+    //   return { path: image.filename };
+    // });
 
     const data = {
       name,
-      latitude,
-      longitude,
+      email,
+      phone,
+      cep,
+      adress,
+      services,
       about,
-      instructions,
-      opening_hours,
-      open_on_weekends,
-      images,
+      // images,
     }
 
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      latitude: Yup.number().required(),
-      longitude: Yup.number().required(),
-      about: Yup.string().required().max(300),
-      instructions: Yup.string().required(),
-      opening_hours: Yup.string().required(),
-      open_on_weekends: Yup.boolean().required(),
+      email: Yup.string().required(),
+      phone: Yup.string().required(),
+      cep: Yup.string().required(),
+      adress: Yup.string().required(),
+      services: Yup.string().required(),
+      about: Yup.string().required().max(400),
+
       images: Yup.array(Yup.object().shape({
         path: Yup.string().required()
       }))
